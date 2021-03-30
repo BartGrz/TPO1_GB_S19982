@@ -40,27 +40,29 @@ public class Main  extends Application    {
 
        Service service = new Service("Polska");
         service.getWeather("Warszawa");
-        startIt(service);
+        startIt(service,"USD");
 
 
     }
 
-public  void startIt (Service service ) throws IOException {
+public  void startIt (Service service,String currency ) throws IOException {
 
        Label label_country = new Label("COUNTRY : " + service.getCountry());
        Label label_city = new Label(" CITY : ");
-       Double rate1 = service.getRateFor("USD");
+       Label label_given_currency = new Label();
+       Double rate1 = service.getRateFor(currency);
        Double rate2 = service.getNBPRate();
        Label label_currency;
 
-         if(service.getCountry().equals("Polska")) {
-              label_currency = new Label("Currency rate : 1 "+ service.getCurrency()+  " =  " + rate2  +  " PLN  ");
-         }else {
-              label_currency = new Label("1 " + service.getCurrency() + " =  " + rate2 + " PLN  ");
-         }
+       //  if(service.getCountry().equals("Polska")) {
+              label_currency = new Label("Currency rate : 1 "+ service.getCurrency() +  " =  " + service.getRateFor(service.getCurrency())/service.getRateFor(service.getCurrencyAdded())  +  service.getCurrencyAdded());
+      //   }else {
+        //      label_currency = new Label("1 " + service.getCurrency() + " =  "  + rate2/service.getRateFor(service.getCurrencyAdded())+ " PLN "); //1/service.getRateFor(service.getCurrencyAdded()
+       //  }
 
        Weather weather = new Weather(service.getWeather(service.getCity()),service.getCity(),service.getCountry() );
        Label label_weather = new Label(""+ weather.toString());
+
 
 
 
@@ -78,7 +80,11 @@ public  void startIt (Service service ) throws IOException {
         label_currency.setLayoutX(0);
         label_currency.setLayoutY(60);
 
-        label_weather.setLayoutX(250);
+        label_given_currency.setLayoutX(0);
+        label_given_currency.setLayoutY(80);
+
+
+        label_weather.setLayoutX(300);
         label_weather.setLayoutY(0);
 
         label_city.setText(label_city.getText()+" " + service.getCity());
@@ -89,12 +95,15 @@ public  void startIt (Service service ) throws IOException {
         button_change.setLayoutX(600);
         button_change.setLayoutY(0);
         button_change.setText("CHANGE DATA");
-
-
+      //  if(service.getCountry().equals("Polska")) {
+            label_given_currency.setText(" 1 " + service.getCurrency()+ " = " +service.getNBPRate() + "PLN  " );
+      //  }else {
+       //     label_given_currency.setText(" 1 " + service.getCurrencyAdded() + " = " + rate2/service.getNBPRate() + " " + service.getCurrency());
+     //   }
         webEngine.load("http://pl.wikipedia.org/wiki/"+service.getCity());
         webView.setLayoutX(0);
         webView.setLayoutY(100);
-        pane.getChildren().addAll(webView,label_city,label_currency,label_weather,button_change,label_country);
+        pane.getChildren().addAll(webView,label_city,label_currency,label_weather,button_change,label_country,label_given_currency);
         Scene scene = new Scene(pane,800,650);
         Stage stage = new Stage();
         stage.setScene(scene);
@@ -114,9 +123,11 @@ public  void startIt (Service service ) throws IOException {
 
         TextField textField_country = new TextField();
         TextField textField_city = new TextField();
+        TextField textField_currency = new TextField();
 
         Label label_country = new Label("Country :");
         Label label_city = new Label("City : ");
+        Label label_currency = new Label("Currency : ");
 
         textField_country.setLayoutX(151);
         textField_country.setLayoutY(72);
@@ -130,10 +141,16 @@ public  void startIt (Service service ) throws IOException {
         label_city.setLayoutX(78);
         label_city.setLayoutY(120);
 
-        button_confirm.setLayoutX(199);
-        button_confirm.setLayoutY(164);
+        label_currency.setLayoutX(78);
+        label_currency.setLayoutY(160);
 
-        pane.getChildren().addAll(textField_city,textField_country,label_city,label_country,button_confirm);
+        textField_currency.setLayoutX(151);
+        textField_currency.setLayoutY(160);
+
+        button_confirm.setLayoutX(199);
+        button_confirm.setLayoutY(190);
+
+        pane.getChildren().addAll(label_currency,textField_city,textField_country,label_city,label_country,button_confirm,textField_currency);
 
         Scene scene = new Scene(pane,344,251);
         Stage stage = new Stage();
@@ -144,10 +161,11 @@ public  void startIt (Service service ) throws IOException {
 
             Service s = new Service(textField_country.getText());
             s.getWeather(textField_city.getText());
+            s.getRateFor(textField_currency.getText());
 
 
             try {
-                startIt(s);
+                startIt(s,s.getCurrencyAdded());
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }

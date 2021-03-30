@@ -23,6 +23,15 @@ public class Service {
     private String iso;
     private String currency;
     private String city;
+    private String currencyAdded;
+
+    public String getCurrencyAdded() {
+        return currencyAdded;
+    }
+
+    public void setCurrencyAdded(String currencyAdded) {
+        this.currencyAdded = currencyAdded;
+    }
 
     public String getCurrency() {
         return currency;
@@ -57,6 +66,8 @@ public class Service {
     }
 
    public double getRateFor(String string) {
+       System.out.println("waluta dodana " + string);
+
 
        if(currency.equals(string))
            return 1;
@@ -70,6 +81,7 @@ public class Service {
        stb.append(tmp);
        stb.delete(6,stb.length());
        tmp=stb.toString();
+       setCurrencyAdded(string);
         return Double.parseDouble(tmp);
 
    }
